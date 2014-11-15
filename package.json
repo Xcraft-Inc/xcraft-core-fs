@@ -16,7 +16,7 @@
     "url" : "lib/xcraft-core-fs"
   },
   "author": "Mathieu Schroeter",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {},
   "devDependencies": {}
 }
