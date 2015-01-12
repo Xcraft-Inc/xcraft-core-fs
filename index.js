@@ -2,6 +2,7 @@
 
 var fs   = require ('fs');
 var path = require ('path');
+var fse  = require ('fs-extra');
 
 exports.cp = function (src, dest) {
   var fdr = fs.openSync (src, 'r');
@@ -49,6 +50,10 @@ exports.cpdir = function (src, dest) {
       exports.cpdir (path.join (src, item), path.join (dest, item));
     });
   }
+};
+
+exports.rmdir = function (location) {
+  fse.removeSync (location);
 };
 
 exports.lsdir = function (location, regex) {
