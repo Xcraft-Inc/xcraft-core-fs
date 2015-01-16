@@ -89,3 +89,9 @@ exports.ls = function (location, regex) {
 
   return listOut;
 };
+
+exports.canExecute = function (file) {
+  var mask = 1;
+  var st = fs.statSync (file);
+  return !!(mask & parseInt ((st.mode & parseInt ("777", 8)).toString (8)[0]))
+};
