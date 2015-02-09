@@ -5,6 +5,7 @@ var path = require ('path');
 var fse  = require ('fs-extra');
 
 exports.cp = function (src, dest) {
+  var fMode = fs.lstatSync (src).mode;
   var fdr = fs.openSync (src, 'r');
   var fdw = fs.openSync (dest, 'w');
   var bytesRead = 1;
@@ -21,6 +22,7 @@ exports.cp = function (src, dest) {
 
   fs.closeSync (fdr);
   fs.closeSync (fdw);
+  fs.chmodSync (dest, fMode);
 };
 
 exports.mkdir = function (location, root) {
