@@ -90,6 +90,13 @@ exports.ls = function (location, regex) {
   return listOut;
 };
 
+exports.mv = function (src, dest) {
+  /* FIXME: use move instead */
+  exports.mkdir (path.dirname (dest));
+  exports.cpdir (src, dest);
+  exports.rmdir (src);
+};
+
 exports.canExecute = function (file) {
   var mask = 1;
   var st;
