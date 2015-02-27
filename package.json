@@ -11,9 +11,9 @@
     "helpers",
     "fs"
   ],
-  "repository" : {
-    "type" : "file",
-    "url" : "lib/xcraft-core-fs"
+  "repository": {
+    "type": "file",
+    "url": "lib/xcraft-core-fs"
   },
   "author": "Mathieu Schroeter",
   "license": "MIT",
