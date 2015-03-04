@@ -93,10 +93,26 @@ exports.ls = function (location, regex) {
 };
 
 exports.mv = function (src, dest) {
-  /* FIXME: use move instead */
-  exports.mkdir (path.dirname (dest));
-  exports.cp (src, dest);
-  exports.rmdir (src);
+  var stats = fs.lstatSync (src);
+
+  if (stats.isFile ()) {
+    exports.mkdir (path.dirname (dest));
+    fs.renameSync (src, dest);
+  } else if (stats.isDirectory ()) {
+    exports.mkdir (dest);
+    fs.readdirSync (src).forEach (function (item) {
+      try {
+        /* Try the faster move. */
+        fs.renameSync (path.join (src, item), path.join (dest, item));
+      } catch (ex) {
+        /* Or use a copy / rm if it fails. */
+        exports.cp (path.join (src, item), path.join (dest, item));
+        exports.rmdir (path.join (src, item));
+      }
+    });
+
+    exports.rmdir (src);
+  }
 };
 
 exports.canExecute = function (file) {
