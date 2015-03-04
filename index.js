@@ -54,7 +54,7 @@ exports.cp = function (src, dest) {
   }
 };
 
-exports.rmdir = function (location) {
+exports.rm = function (location) {
   fse.removeSync (location);
 };
 
