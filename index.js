@@ -4,7 +4,7 @@ var fs   = require ('fs');
 var path = require ('path');
 var fse  = require ('fs-extra');
 
-exports.cp = function (src, dest) {
+var cpFile = function (src, dest) {
   var fMode = fs.lstatSync (src).mode;
   var fdr = fs.openSync (src, 'r');
   var fdw = fs.openSync (dest, 'w');
@@ -41,15 +41,15 @@ exports.mkdir = function (location, root) {
   return !dirs.length || exports.mkdir (dirs.join (path.sep), root);
 };
 
-exports.cpdir = function (src, dest) {
+exports.cp = function (src, dest) {
   var stats = fs.lstatSync (src);
 
   if (stats.isFile ()) {
-    exports.cp (src, dest);
+    cpFile (src, dest);
   } else if (stats.isDirectory ()) {
     exports.mkdir (dest);
     fs.readdirSync (src).forEach (function (item) {
-      exports.cpdir (path.join (src, item), path.join (dest, item));
+      exports.cp (path.join (src, item), path.join (dest, item));
     });
   }
 };
@@ -95,7 +95,7 @@ exports.ls = function (location, regex) {
 exports.mv = function (src, dest) {
   /* FIXME: use move instead */
   exports.mkdir (path.dirname (dest));
-  exports.cpdir (src, dest);
+  exports.cp (src, dest);
   exports.rmdir (src);
 };
 
