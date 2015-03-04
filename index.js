@@ -144,11 +144,11 @@ exports.mv = function (src, dest) {
       } catch (ex) {
         /* Or use a copy / rm if it fails. */
         exports.cp (path.join (src, item), path.join (dest, item));
-        exports.rmdir (path.join (src, item));
+        exports.rm (path.join (src, item));
       }
     });
 
-    exports.rmdir (src);
+    exports.rm (src);
   }
 };
 
