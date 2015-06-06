@@ -164,3 +164,22 @@ exports.canExecute = function (file) {
 
   return !!(mask & parseInt ((st.mode & parseInt ('777', 8)).toString (8)[0]));
 };
+
+exports.newerFiles = function (location, regex, mtime) {
+  var listIn = fs.readdirSync (location);
+
+  return listIn.some (function (item) {
+    if (regex && !regex.test (item)) {
+      return;
+    }
+
+    var file = path.join (location, item);
+    var st   = fs.statSync (file);
+
+    if (st.isDirectory ()) {
+      return exports.newerFiles (file, regex, mtime);
+    }
+
+    return st.mtime > mtime;
+  });
+};
