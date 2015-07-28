@@ -18,7 +18,7 @@
   "author": "Mathieu Schroeter",
   "license": "MIT",
   "dependencies": {
-    "fs-extra": "^0.13.0"
+    "fs-extra": "^0.22.1"
   },
   "devDependencies": {}
 }
