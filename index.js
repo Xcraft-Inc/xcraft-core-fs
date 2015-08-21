@@ -45,10 +45,10 @@ exports.mkdir = function (location, root) {
  * Copy a file or the content of a directory.
  *
  * Examples:
- *   cp ('indir/infile', 'outdir/outfile');
+ *   `cp ('indir/infile', 'outdir/outfile');`
  *   - The file is moved and renamed. When the source is a file, the
  *     destination must always be a file.
- *   cp ('indir', 'outdir');
+ *   `cp ('indir', 'outdir');``
  *   - The content of indir is copied in outdir. It's important to note that
  *     outdir can exists with already a content, then the source files will
  *     add or replace the other files at the destination. The other files
@@ -115,10 +115,10 @@ exports.ls = function (location, regex) {
  *
  * The source directory is not renamed, it's the content which is moved.
  * Examples:
- *   mv ('indir/infile', 'outdir/outfile');
+ *   `mv ('indir/infile', 'outdir/outfile');``
  *   - The file is moved and renamed. When the source is a file, the
  *     destination must always be a file.
- *   mv ('indir', 'outdir');
+ *   `mv ('indir', 'outdir');``
  *   - The content of indir is moved in outdir. It's important to note that
  *     outdir can exists with already a content, then the source files will
  *     add or replace the other files at the destination. The other files
