@@ -8,6 +8,7 @@
   "requireLineFeedAtFileEnd":                 true,
   "requireOperatorBeforeLineBreak":           true,
   "requireParenthesesAroundIIFE":             true,
+  "requireSemicolons":                        true,
 
   "requireSpaceBetweenArguments":             true,
   "requireSpacesInCallExpression":            true,
@@ -42,16 +43,26 @@
   "disallowSpacesInsideObjectBrackets":       "all",
 
   "disallowSpaceAfterObjectKeys":             true,
+  "disallowSpaceBeforeComma":                 true,
+  "disallowSpaceBeforeSemicolon":             true,
 
   "disallowYodaConditions":                   true,
 
   "safeContextKeyword":                       ["self"],
 
   "validateIndentation":                      2,
-  "validateJSDoc": {
+  "jsDoc": {
+    "checkAnnotations":                       true,
     "checkParamNames":                        true,
     "checkRedundantParams":                   true,
-    "requireParamTypes":                      true
+    "requireParamTypes":                      true,
+    "checkReturnTypes":                       true,
+    "checkRedundantReturns":                  true,
+    "requireReturnTypes":                     true,
+    "checkTypes":                             true,
+    "requireHyphenBeforeDescription":         true,
+    "requireNewlineAfterDescription":         true,
+    "requireDescriptionCompleteSentence":     true
   },
   "validateLineBreaks":                       "LF",
   "validateParameterSeparator":               ", ",
