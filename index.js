@@ -87,7 +87,7 @@ exports.lsdir = function (location, regex) {
 
     var dir = path.join (location, item);
     var st = fs.statSync (dir);
-    if (st.isDirectory (dir)) {
+    if (st.isDirectory ()) {
       listOut.push (item);
     }
   });
