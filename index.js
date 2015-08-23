@@ -152,6 +152,24 @@ exports.mv = function (src, dest) {
   }
 };
 
+exports.batch = {};
+exports.batch.mv = function (oldfileName, newFileName, location) {
+  var files = exports.ls (location);
+
+  files.forEach (function (file) {
+    var st = fs.statSync (path.join (location, file));
+    if (st.isDirectory ()) {
+      exports.batch.mv (oldfileName, newFileName, path.join (location, file));
+      return;
+    }
+
+    if (file === oldfileName) {
+      exports.mv (path.join (location, file), path.join (location, newFileName));
+    }
+  });
+};
+
+
 exports.canExecute = function (file) {
   var mask = 1;
   var st;
