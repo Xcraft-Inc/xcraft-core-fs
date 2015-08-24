@@ -4,6 +4,8 @@ var fs   = require ('fs');
 var path = require ('path');
 var fse  = require ('fs-extra');
 
+exports.batch = {};
+
 var cpFile = function (src, dest) {
   var fMode = fs.lstatSync (src).mode;
   var fdr = fs.openSync (src, 'r');
@@ -23,6 +25,22 @@ var cpFile = function (src, dest) {
   fs.closeSync (fdr);
   fs.closeSync (fdw);
   fs.chmodSync (dest, fMode);
+};
+
+var batch = function (oldfileName, newFileName, location, action) {
+  var files = exports.ls (location);
+
+  files.forEach (function (file) {
+    var st = fs.statSync (path.join (location, file));
+    if (st.isDirectory ()) {
+      exports.batch[action] (oldfileName, newFileName, path.join (location, file), action);
+      return;
+    }
+
+    if (file === oldfileName) {
+      exports[action] (path.join (location, file), path.join (location, newFileName));
+    }
+  });
 };
 
 exports.mkdir = function (location, root) {
@@ -70,6 +88,10 @@ exports.cp = function (src, dest) {
       exports.cp (path.join (src, item), path.join (dest, item));
     });
   }
+};
+
+exports.batch.mv = function (oldFileName, newFileName, location) {
+  batch (oldFileName, newFileName, location, 'mv');
 };
 
 exports.rm = function (location) {
@@ -151,24 +173,6 @@ exports.mv = function (src, dest) {
     exports.rm (src);
   }
 };
-
-exports.batch = {};
-exports.batch.mv = function (oldfileName, newFileName, location) {
-  var files = exports.ls (location);
-
-  files.forEach (function (file) {
-    var st = fs.statSync (path.join (location, file));
-    if (st.isDirectory ()) {
-      exports.batch.mv (oldfileName, newFileName, path.join (location, file));
-      return;
-    }
-
-    if (file === oldfileName) {
-      exports.mv (path.join (location, file), path.join (location, newFileName));
-    }
-  });
-};
-
 
 exports.canExecute = function (file) {
   var mask = 1;
