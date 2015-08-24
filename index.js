@@ -90,6 +90,48 @@ exports.cp = function (src, dest) {
   }
 };
 
+/**
+ * Move a file or the content of a directory.
+ *
+ * The source directory is not renamed, it's the content which is moved.
+ * Examples:
+ *   `mv ('indir/infile', 'outdir/outfile');``
+ *   - The file is moved and renamed. When the source is a file, the
+ *     destination must always be a file.
+ *   `mv ('indir', 'outdir');``
+ *   - The content of indir is moved in outdir. It's important to note that
+ *     outdir can exists with already a content, then the source files will
+ *     add or replace the other files at the destination. The other files
+ *     are not removed.
+ *
+ * The intermediate directories are created if necessary (a la mkdir -p).
+ *
+ * @param {string} src - The file or directory to move.
+ * @param {string} dest - The file or the destination directory.
+ */
+exports.mv = function (src, dest) {
+  var stats = fs.lstatSync (src);
+
+  if (stats.isFile ()) {
+    exports.mkdir (path.dirname (dest));
+    fs.renameSync (src, dest);
+  } else if (stats.isDirectory ()) {
+    exports.mkdir (dest);
+    fs.readdirSync (src).forEach (function (item) {
+      try {
+        /* Try the faster move. */
+        fs.renameSync (path.join (src, item), path.join (dest, item));
+      } catch (ex) {
+        /* Or use a copy / rm if it fails. */
+        exports.cp (path.join (src, item), path.join (dest, item));
+        exports.rm (path.join (src, item));
+      }
+    });
+
+    exports.rm (src);
+  }
+};
+
 exports.batch.cp = function (oldFileName, newFileName, location) {
   batch (oldFileName, newFileName, location, 'cp');
 };
@@ -134,48 +176,6 @@ exports.ls = function (location, regex) {
   });
 
   return listOut;
-};
-
-/**
- * Move a file or the content of a directory.
- *
- * The source directory is not renamed, it's the content which is moved.
- * Examples:
- *   `mv ('indir/infile', 'outdir/outfile');``
- *   - The file is moved and renamed. When the source is a file, the
- *     destination must always be a file.
- *   `mv ('indir', 'outdir');``
- *   - The content of indir is moved in outdir. It's important to note that
- *     outdir can exists with already a content, then the source files will
- *     add or replace the other files at the destination. The other files
- *     are not removed.
- *
- * The intermediate directories are created if necessary (a la mkdir -p).
- *
- * @param {string} src - The file or directory to move.
- * @param {string} dest - The file or the destination directory.
- */
-exports.mv = function (src, dest) {
-  var stats = fs.lstatSync (src);
-
-  if (stats.isFile ()) {
-    exports.mkdir (path.dirname (dest));
-    fs.renameSync (src, dest);
-  } else if (stats.isDirectory ()) {
-    exports.mkdir (dest);
-    fs.readdirSync (src).forEach (function (item) {
-      try {
-        /* Try the faster move. */
-        fs.renameSync (path.join (src, item), path.join (dest, item));
-      } catch (ex) {
-        /* Or use a copy / rm if it fails. */
-        exports.cp (path.join (src, item), path.join (dest, item));
-        exports.rm (path.join (src, item));
-      }
-    });
-
-    exports.rm (src);
-  }
 };
 
 exports.canExecute = function (file) {
