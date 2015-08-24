@@ -90,6 +90,10 @@ exports.cp = function (src, dest) {
   }
 };
 
+exports.batch.cp = function (oldFileName, newFileName, location) {
+  batch (oldFileName, newFileName, location, 'cp');
+};
+
 exports.batch.mv = function (oldFileName, newFileName, location) {
   batch (oldFileName, newFileName, location, 'mv');
 };
