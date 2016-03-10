@@ -1,8 +1,9 @@
 'use strict';
 
-var fs   = require ('fs');
-var path = require ('path');
-var fse  = require ('fs-extra');
+const fs           = require ('fs');
+const path         = require ('path');
+const fse          = require ('fs-extra');
+const isBinaryFile = require ('isbinaryfile');
 
 exports.batch = {};
 
@@ -208,4 +209,20 @@ exports.newerFiles = function (location, regex, mtime) {
 
     return st.mtime > mtime;
   });
+};
+
+exports.sed = function (file, regex, newValue) {
+  var isBin = isBinaryFile.sync (file);
+  if (isBin) {
+    return false;
+  }
+
+  let data = fs.readFileSync (file).toString ();
+  if (!regex.test (data)) {
+    return false;
+  }
+
+  data = data.replace (regex, newValue);
+  fs.writeFileSync (file, data);
+  return true;
 };
