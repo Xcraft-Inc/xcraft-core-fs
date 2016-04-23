@@ -29,6 +29,7 @@ var cpFile = function (src, dest) {
 };
 
 var batch = function (oldfileName, newFileName, location, action) {
+  const isRegExp = oldfileName instanceof RegExp;
   var files = exports.ls (location);
 
   files.forEach (function (file) {
@@ -38,8 +39,9 @@ var batch = function (oldfileName, newFileName, location, action) {
       return;
     }
 
-    if (file === oldfileName) {
-      exports[action] (path.join (location, file), path.join (location, newFileName));
+    if (isRegExp && oldfileName.test (file) || file === oldfileName) {
+      const fileName = isRegExp ? file.replace (oldfileName, newFileName) : newFileName;
+      exports[action] (path.join (location, file), path.join (location, fileName));
     }
   });
 };
