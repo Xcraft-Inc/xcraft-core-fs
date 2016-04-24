@@ -181,6 +181,22 @@ exports.ls = function (location, regex) {
   return listOut;
 };
 
+exports.lsall = function (location) {
+  const listIn = fs.readdirSync (location);
+  let listOut = [];
+
+  listIn.forEach (function (item) {
+    const entry = path.join (location, item);
+    listOut.push (entry);
+    const st = fs.statSync (entry);
+    if (st.isDirectory ()) {
+      listOut = listOut.concat (exports.lsall (entry));
+    }
+  });
+
+  return listOut;
+};
+
 exports.canExecute = function (file) {
   var mask = 1;
   var st;
