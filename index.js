@@ -83,7 +83,7 @@ exports.mkdir = function (location, root) {
 exports.cp = function (src, dest) {
   var stats = fs.lstatSync (src);
 
-  if (stats.isFile ()) {
+  if (stats.isFile () || stats.isSymbolicLink ()) {
     cpFile (src, dest);
   } else if (stats.isDirectory ()) {
     exports.mkdir (dest);
@@ -115,7 +115,7 @@ exports.cp = function (src, dest) {
 exports.mv = function (src, dest) {
   var stats = fs.lstatSync (src);
 
-  if (stats.isFile ()) {
+  if (stats.isFile () || stats.isSymbolicLink ()) {
     exports.mkdir (path.dirname (dest));
     fs.renameSync (src, dest);
   } else if (stats.isDirectory ()) {
