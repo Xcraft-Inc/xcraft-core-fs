@@ -33,7 +33,7 @@ var batch = function (oldfileName, newFileName, location, action) {
   var files = exports.ls (location);
 
   files.forEach (function (file) {
-    var st = fs.statSync (path.join (location, file));
+    var st = fs.lstatSync (path.join (location, file));
     if (st.isDirectory ()) {
       exports.batch[action] (oldfileName, newFileName, path.join (location, file), action);
       return;
