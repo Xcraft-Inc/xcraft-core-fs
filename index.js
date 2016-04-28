@@ -8,7 +8,15 @@ const isBinaryFile = require ('isbinaryfile');
 exports.batch = {};
 
 var cpFile = function (src, dest) {
-  var fMode = fs.lstatSync (src).mode;
+  const st = fs.lstatSync (src);
+  const fMode = st.mode;
+
+  if (st.isSymbolicLink ()) {
+    const link = fs.readlinkSync (src);
+    fs.symlinkSync (link, dest);
+    return;
+  }
+
   var fdr = fs.openSync (src, 'r');
   var fdw = fs.openSync (dest, 'w');
   var bytesRead = 1;
