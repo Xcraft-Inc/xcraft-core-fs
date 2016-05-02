@@ -13,6 +13,7 @@ var cpFile = function (src, dest) {
 
   if (st.isSymbolicLink ()) {
     const link = fs.readlinkSync (src);
+    fs.unlinkSync (dest);
     fs.symlinkSync (link, dest);
     return;
   }
