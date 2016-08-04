@@ -24,7 +24,7 @@
     "fs-extra": "^0.22.1",
     "isbinaryfile": "^3.0.0"
   },
-   "bugs": {
+  "bugs": {
     "url": "https://github.com/Xcraft-Inc/xcraft-core-fs/issues"
   },
   "homepage": "https://github.com/Xcraft-Inc/xcraft-core-fs#readme"
