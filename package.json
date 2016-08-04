@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Xcraft fs helpers",
   "main": "index.js",
+  "engines": {
+    "node": ">=6"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,9 +14,9 @@
     "helpers",
     "fs"
   ],
-  "repository": {
-    "type": "file",
-    "url": "lib/xcraft-core-fs"
+   "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xcraft-Inc/xcraft-core-fs.git"
   },
   "author": "Mathieu Schroeter",
   "license": "MIT",
@@ -21,5 +24,8 @@
     "fs-extra": "^0.22.1",
     "isbinaryfile": "^3.0.0"
   },
-  "devDependencies": {}
+   "bugs": {
+    "url": "https://github.com/Xcraft-Inc/xcraft-core-fs/issues"
+  },
+  "homepage": "https://github.com/Xcraft-Inc/xcraft-core-fs#readme"
 }
