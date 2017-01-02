@@ -158,6 +158,18 @@ exports.batch.mv = function (oldFileName, newFileName, location) {
   batch (oldFileName, newFileName, location, 'mv');
 };
 
+exports.rmFiles = function (location) {
+  const stats = fs.lstatSync (location);
+
+  if (stats.isFile () || stats.isSymbolicLink ()) {
+    exports.rm (location);
+  } else if (stats.isDirectory ()) {
+    fs.readdirSync (location).forEach ((item) => {
+      exports.rmFiles (path.join (location, item));
+    });
+  }
+};
+
 exports.rm = function (location) {
   fse.removeSync (location);
 };
