@@ -1,8 +1,8 @@
 'use strict';
 
-const fs           = require ('fs');
-const path         = require ('path');
-const fse          = require ('fs-extra');
+const fs = require ('fs');
+const path = require ('path');
+const fse = require ('fs-extra');
 const isBinaryFile = require ('isbinaryfile');
 
 exports.batch = {};
@@ -50,20 +50,30 @@ var batch = function (oldfileName, newFileName, location, action) {
   files.forEach (function (file) {
     var st = fs.lstatSync (path.join (location, file));
     if (st.isDirectory ()) {
-      exports.batch[action] (oldfileName, newFileName, path.join (location, file), action);
+      exports.batch[action] (
+        oldfileName,
+        newFileName,
+        path.join (location, file),
+        action
+      );
       return;
     }
 
-    if (isRegExp && oldfileName.test (file) || file === oldfileName) {
-      const fileName = isRegExp ? file.replace (oldfileName, newFileName) : newFileName;
-      exports[action] (path.join (location, file), path.join (location, fileName));
+    if ((isRegExp && oldfileName.test (file)) || file === oldfileName) {
+      const fileName = isRegExp
+        ? file.replace (oldfileName, newFileName)
+        : newFileName;
+      exports[action] (
+        path.join (location, file),
+        path.join (location, fileName)
+      );
     }
   });
 };
 
 exports.mkdir = function (location, root) {
   var dirs = location.split (path.sep);
-  var dir  = dirs.shift ();
+  var dir = dirs.shift ();
   root = (root || '') + dir + path.sep;
 
   try {
@@ -164,7 +174,7 @@ exports.rmSymlinks = function (location) {
   if (stats.isSymbolicLink ()) {
     exports.rm (location);
   } else if (stats.isDirectory ()) {
-    fs.readdirSync (location).forEach ((item) => {
+    fs.readdirSync (location).forEach (item => {
       exports.rmSymlinks (path.join (location, item));
     });
   }
@@ -176,7 +186,7 @@ exports.rmFiles = function (location) {
   if (stats.isFile () || stats.isSymbolicLink ()) {
     exports.rm (location);
   } else if (stats.isDirectory ()) {
-    fs.readdirSync (location).forEach ((item) => {
+    fs.readdirSync (location).forEach (item => {
       exports.rmFiles (path.join (location, item));
     });
   }
@@ -258,7 +268,7 @@ exports.newerFiles = function (location, regex, mtime) {
     }
 
     var file = path.join (location, item);
-    var st   = fs.statSync (file);
+    var st = fs.statSync (file);
 
     if (st.isDirectory ()) {
       return exports.newerFiles (file, regex, mtime);
