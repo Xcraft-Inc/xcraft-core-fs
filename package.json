@@ -21,7 +21,7 @@
   "author": "Mathieu Schroeter",
   "license": "MIT",
   "dependencies": {
-    "fs-extra": "^3.0.0",
+    "fs-extra": "^5.0.0",
     "isbinaryfile": "^3.0.0"
   },
   "bugs": {
