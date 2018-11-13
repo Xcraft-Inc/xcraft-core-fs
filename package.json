@@ -9,11 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "xcraft",
-    "helpers",
-    "fs"
-  ],
+  "keywords": ["xcraft", "helpers", "fs"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Xcraft-Inc/xcraft-core-fs.git"
@@ -29,6 +25,6 @@
   },
   "homepage": "https://github.com/Xcraft-Inc/xcraft-core-fs#readme",
   "devDependencies": {
-    "xcraft-dev-rules": "^0.2.0"
+    "xcraft-dev-rules": "^0.3.0"
   }
 }
