@@ -236,7 +236,7 @@ exports.lsall = function(location) {
     listOut.push(entry);
     let st = null;
     try {
-      st = fs.statSync(entry);
+      st = fs.lstatSync(entry);
     } catch (ex) {
       /* Ignore unsupported paths, only directories are useful here  */
     }
