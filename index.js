@@ -234,13 +234,13 @@ exports.lsall = function(location) {
   listIn.forEach(function(item) {
     const entry = path.join(location, item);
     listOut.push(entry);
-    let st;
+    let st = null;
     try {
       st = fs.statSync(entry);
     } catch (ex) {
       /* Ignore unsupported paths, only directories are useful here  */
     }
-    if (st.isDirectory()) {
+    if (st && st.isDirectory()) {
       listOut = listOut.concat(exports.lsall(entry));
     }
   });
