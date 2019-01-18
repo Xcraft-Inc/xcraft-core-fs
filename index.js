@@ -43,26 +43,18 @@ var cpFile = function(src, dest) {
   fs.chmodSync(dest, fMode);
 };
 
-var batch = function(oldfileName, newFileName, location, action) {
-  const isRegExp = oldfileName instanceof RegExp;
+var batch = function(cb, location, action) {
   var files = exports.ls(location);
 
   files.forEach(function(file) {
     var st = fs.lstatSync(path.join(location, file));
     if (st.isDirectory()) {
-      exports.batch[action](
-        oldfileName,
-        newFileName,
-        path.join(location, file),
-        action
-      );
+      exports.batch[action](cb, path.join(location, file), action);
       return;
     }
 
-    if ((isRegExp && oldfileName.test(file)) || file === oldfileName) {
-      const fileName = isRegExp
-        ? file.replace(oldfileName, newFileName)
-        : newFileName;
+    const fileName = cb(location, file);
+    if (fileName) {
       exports[action](path.join(location, file), path.join(location, fileName));
     }
   });
@@ -157,12 +149,12 @@ exports.mv = function(src, dest) {
   }
 };
 
-exports.batch.cp = function(oldFileName, newFileName, location) {
-  batch(oldFileName, newFileName, location, 'cp');
+exports.batch.cp = function(cb, location) {
+  batch(cb, location, 'cp');
 };
 
-exports.batch.mv = function(oldFileName, newFileName, location) {
-  batch(oldFileName, newFileName, location, 'mv');
+exports.batch.mv = function(cb, location) {
+  batch(cb, location, 'mv');
 };
 
 exports.rmSymlinks = function(location) {
