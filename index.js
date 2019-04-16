@@ -262,7 +262,7 @@ exports.newerFiles = function(location, regex, mtime) {
     }
 
     var file = path.join(location, item);
-    var st = fs.statSync(file);
+    var st = fs.lstatSync(file);
 
     if (st.isDirectory()) {
       return exports.newerFiles(file, regex, mtime);
