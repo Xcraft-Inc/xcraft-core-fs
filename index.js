@@ -219,7 +219,7 @@ exports.ls = function(location, regex) {
   return listOut;
 };
 
-exports.lsall = function(location) {
+exports.lsall = function(location, followSymlink = false) {
   const listIn = fs.readdirSync(location);
   let listOut = [];
 
@@ -228,12 +228,12 @@ exports.lsall = function(location) {
     listOut.push(entry);
     let st = null;
     try {
-      st = fs.lstatSync(entry);
+      st = followSymlink ? fs.statSync(entry) : fs.lstatSync(entry);
     } catch (ex) {
       /* Ignore unsupported paths, only directories are useful here  */
     }
     if (st && st.isDirectory()) {
-      listOut = listOut.concat(exports.lsall(entry));
+      listOut = listOut.concat(exports.lsall(entry, followSymlink));
     }
   });
 
