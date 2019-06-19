@@ -1,6 +1,6 @@
 {
   "name": "xcraft-core-fs",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Xcraft fs helpers",
   "main": "index.js",
   "engines": {
