@@ -98,6 +98,7 @@ exports.cp = function(src, dest) {
   var stats = fs.lstatSync(src);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
+    exports.mkdir(path.dirname(dest));
     cpFile(src, dest);
   } else if (stats.isDirectory()) {
     exports.mkdir(dest);
