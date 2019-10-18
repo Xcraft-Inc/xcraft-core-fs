@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const fse = require('fs-extra');
 const isBinaryFile = require('isbinaryfile');
 
@@ -271,6 +272,35 @@ exports.newerFiles = function(location, regex, mtime) {
 
     return st.mtime > mtime;
   });
+};
+
+exports.shasum = function(location, regex) {
+  const listIn = fs.readdirSync(location);
+
+  const sha = crypto.createHash('sha256');
+
+  listIn.some(item => {
+    if (regex && !regex.test(item)) {
+      return;
+    }
+
+    const file = path.join(location, item);
+    const st = fs.lstatSync(file);
+
+    let data;
+
+    if (st.isDirectory()) {
+      return exports.shasum(file, regex);
+    } else if (st.isSymbolicLink()) {
+      data = fs.readlinkSync(file);
+    } else {
+      data = fs.readFileSync(file);
+    }
+
+    return sha.update(data);
+  });
+
+  return sha.digest('hex');
 };
 
 exports.sed = function(file, regex, newValue) {
