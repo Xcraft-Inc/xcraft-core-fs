@@ -274,10 +274,14 @@ exports.newerFiles = function(location, regex, mtime) {
   });
 };
 
-exports.shasum = function(location, regex) {
+exports.shasum = function(location, regex, sha = null) {
   const listIn = fs.readdirSync(location);
 
-  const sha = crypto.createHash('sha256');
+  let main = false;
+  if (!sha) {
+    sha = crypto.createHash('sha256');
+    main = true;
+  }
 
   listIn.some(item => {
     if (regex && !regex.test(item)) {
@@ -287,11 +291,13 @@ exports.shasum = function(location, regex) {
     const file = path.join(location, item);
     const st = fs.lstatSync(file);
 
-    let data;
-
     if (st.isDirectory()) {
-      return exports.shasum(file, regex);
-    } else if (st.isSymbolicLink()) {
+      exports.shasum(file, regex, sha);
+      return;
+    }
+
+    let data;
+    if (st.isSymbolicLink()) {
       data = fs.readlinkSync(file);
     } else {
       data = fs.readFileSync(file);
@@ -300,7 +306,9 @@ exports.shasum = function(location, regex) {
     return sha.update(data);
   });
 
-  return sha.digest('hex');
+  if (main) {
+    return sha.digest('hex');
+  }
 };
 
 exports.sed = function(file, regex, newValue) {
