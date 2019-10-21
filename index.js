@@ -283,7 +283,7 @@ exports.shasum = function(location, regex, sha = null) {
     main = true;
   }
 
-  listIn.some(item => {
+  listIn.forEach(item => {
     if (regex && !regex.test(item)) {
       return;
     }
@@ -303,7 +303,7 @@ exports.shasum = function(location, regex, sha = null) {
       data = fs.readFileSync(file);
     }
 
-    return sha.update(data);
+    sha.update(data);
   });
 
   if (main) {
