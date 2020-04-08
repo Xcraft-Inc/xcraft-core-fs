@@ -8,7 +8,7 @@ const isBinaryFile = require('isbinaryfile');
 
 exports.batch = {};
 
-var cpFile = function(src, dest) {
+var cpFile = function (src, dest) {
   const st = fs.lstatSync(src);
   const fMode = st.mode;
 
@@ -44,10 +44,10 @@ var cpFile = function(src, dest) {
   fs.chmodSync(dest, fMode);
 };
 
-var batch = function(cb, location, action) {
+var batch = function (cb, location, action) {
   var files = exports.ls(location);
 
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     var st = fs.lstatSync(path.join(location, file));
     if (st.isDirectory()) {
       exports.batch[action](cb, path.join(location, file), action);
@@ -61,7 +61,7 @@ var batch = function(cb, location, action) {
   });
 };
 
-exports.mkdir = function(location, root) {
+exports.mkdir = function (location, root) {
   var dirs = location.split(path.sep);
   var dir = dirs.shift();
   root = (root || '') + dir + path.sep;
@@ -95,7 +95,7 @@ exports.mkdir = function(location, root) {
  * @param {string} src - The file or directory to copy.
  * @param {string} dest - The file or the destination directory.
  */
-exports.cp = function(src, dest) {
+exports.cp = function (src, dest) {
   var stats = fs.lstatSync(src);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
@@ -103,7 +103,7 @@ exports.cp = function(src, dest) {
     cpFile(src, dest);
   } else if (stats.isDirectory()) {
     exports.mkdir(dest);
-    fs.readdirSync(src).forEach(function(item) {
+    fs.readdirSync(src).forEach(function (item) {
       exports.cp(path.join(src, item), path.join(dest, item));
     });
   }
@@ -128,7 +128,7 @@ exports.cp = function(src, dest) {
  * @param {string} src - The file or directory to move.
  * @param {string} dest - The file or the destination directory.
  */
-exports.mv = function(src, dest) {
+exports.mv = function (src, dest) {
   var stats = fs.lstatSync(src);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
@@ -136,7 +136,7 @@ exports.mv = function(src, dest) {
     fs.renameSync(src, dest);
   } else if (stats.isDirectory()) {
     exports.mkdir(dest);
-    fs.readdirSync(src).forEach(function(item) {
+    fs.readdirSync(src).forEach(function (item) {
       try {
         /* Try the faster move. */
         fs.renameSync(path.join(src, item), path.join(dest, item));
@@ -151,47 +151,47 @@ exports.mv = function(src, dest) {
   }
 };
 
-exports.batch.cp = function(cb, location) {
+exports.batch.cp = function (cb, location) {
   batch(cb, location, 'cp');
 };
 
-exports.batch.mv = function(cb, location) {
+exports.batch.mv = function (cb, location) {
   batch(cb, location, 'mv');
 };
 
-exports.rmSymlinks = function(location) {
+exports.rmSymlinks = function (location) {
   const stats = fs.lstatSync(location);
 
   if (stats.isSymbolicLink()) {
     exports.rm(location);
   } else if (stats.isDirectory()) {
-    fs.readdirSync(location).forEach(item => {
+    fs.readdirSync(location).forEach((item) => {
       exports.rmSymlinks(path.join(location, item));
     });
   }
 };
 
-exports.rmFiles = function(location) {
+exports.rmFiles = function (location) {
   const stats = fs.lstatSync(location);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
     exports.rm(location);
   } else if (stats.isDirectory()) {
-    fs.readdirSync(location).forEach(item => {
+    fs.readdirSync(location).forEach((item) => {
       exports.rmFiles(path.join(location, item));
     });
   }
 };
 
-exports.rm = function(location) {
+exports.rm = function (location) {
   fse.removeSync(location);
 };
 
-exports.lsdir = function(location, regex) {
+exports.lsdir = function (location, regex) {
   var listIn = fs.readdirSync(location);
   var listOut = [];
 
-  listIn.forEach(function(item) {
+  listIn.forEach(function (item) {
     if (regex && !regex.test(item)) {
       return;
     }
@@ -206,11 +206,11 @@ exports.lsdir = function(location, regex) {
   return listOut;
 };
 
-exports.ls = function(location, regex) {
+exports.ls = function (location, regex) {
   var listIn = fs.readdirSync(location);
   var listOut = [];
 
-  listIn.forEach(function(item) {
+  listIn.forEach(function (item) {
     if (regex && !regex.test(item)) {
       return;
     }
@@ -221,11 +221,11 @@ exports.ls = function(location, regex) {
   return listOut;
 };
 
-exports.lsall = function(location, followSymlink = false) {
+exports.lsall = function (location, followSymlink = false) {
   const listIn = fs.readdirSync(location);
   let listOut = [];
 
-  listIn.forEach(function(item) {
+  listIn.forEach(function (item) {
     const entry = path.join(location, item);
     listOut.push(entry);
     let st = null;
@@ -242,7 +242,7 @@ exports.lsall = function(location, followSymlink = false) {
   return listOut;
 };
 
-exports.canExecute = function(file) {
+exports.canExecute = function (file) {
   var mask = 1;
   var st;
 
@@ -255,10 +255,10 @@ exports.canExecute = function(file) {
   return !!(mask & parseInt((st.mode & parseInt('777', 8)).toString(8)[0]));
 };
 
-exports.newerFiles = function(location, regex, mtime) {
+exports.newerFiles = function (location, regex, mtime) {
   var listIn = fs.readdirSync(location);
 
-  return listIn.some(function(item) {
+  return listIn.some(function (item) {
     if (regex && !regex.test(item)) {
       return;
     }
@@ -274,7 +274,7 @@ exports.newerFiles = function(location, regex, mtime) {
   });
 };
 
-exports.shasum = function(location, regex, sha = null) {
+exports.shasum = function (location, regex, sha = null) {
   const listIn = fs.readdirSync(location);
 
   let main = false;
@@ -283,7 +283,7 @@ exports.shasum = function(location, regex, sha = null) {
     main = true;
   }
 
-  listIn.forEach(item => {
+  listIn.forEach((item) => {
     if (regex && !regex.test(item)) {
       return;
     }
@@ -311,7 +311,7 @@ exports.shasum = function(location, regex, sha = null) {
   }
 };
 
-exports.sed = function(file, regex, newValue) {
+exports.sed = function (file, regex, newValue) {
   var isBin = isBinaryFile.sync(file);
   if (isBin) {
     return false;
