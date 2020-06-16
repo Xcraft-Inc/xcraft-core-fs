@@ -31,7 +31,7 @@ var cpFile = function (src, dest) {
   var pos = 0;
 
   var BUF_LENGTH = 64 * 1024;
-  var buf = new Buffer(BUF_LENGTH);
+  var buf = Buffer.alloc(BUF_LENGTH);
 
   while (bytesRead > 0) {
     bytesRead = fs.readSync(fdr, buf, 0, BUF_LENGTH, pos);
