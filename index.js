@@ -82,7 +82,7 @@ exports.mkdir = function (location, root) {
  *
  * Examples:
  *   `cp ('indir/infile', 'outdir/outfile');`
- *   - The file is moved and renamed. When the source is a file, the
+ *   - The file is copied and renamed. When the source is a file, the
  *     destination must always be a file.
  *   `cp ('indir', 'outdir');``
  *   - The content of indir is copied in outdir. It's important to note that
