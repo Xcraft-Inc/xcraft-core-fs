@@ -1,6 +1,5 @@
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const fse = require('fs-extra');
@@ -9,11 +8,11 @@ const isBinaryFile = require('isbinaryfile');
 exports.batch = {};
 
 var cpFile = function (src, dest) {
-  const st = fs.lstatSync(src);
+  const st = fse.lstatSync(src);
   const fMode = st.mode;
 
   if (st.isSymbolicLink()) {
-    const link = fs.readlinkSync(src);
+    const link = fse.readlinkSync(src);
     try {
       fse.removeSync(dest);
     } catch (ex) {
@@ -21,12 +20,12 @@ var cpFile = function (src, dest) {
         throw ex;
       }
     }
-    fs.symlinkSync(link, dest);
+    fse.symlinkSync(link, dest);
     return;
   }
 
-  var fdr = fs.openSync(src, 'r');
-  var fdw = fs.openSync(dest, 'w');
+  var fdr = fse.openSync(src, 'r');
+  var fdw = fse.openSync(dest, 'w');
   var bytesRead = 1;
   var pos = 0;
 
@@ -34,21 +33,21 @@ var cpFile = function (src, dest) {
   var buf = Buffer.alloc(BUF_LENGTH);
 
   while (bytesRead > 0) {
-    bytesRead = fs.readSync(fdr, buf, 0, BUF_LENGTH, pos);
-    fs.writeSync(fdw, buf, 0, bytesRead);
+    bytesRead = fse.readSync(fdr, buf, 0, BUF_LENGTH, pos);
+    fse.writeSync(fdw, buf, 0, bytesRead);
     pos += bytesRead;
   }
 
-  fs.closeSync(fdr);
-  fs.closeSync(fdw);
-  fs.chmodSync(dest, fMode);
+  fse.closeSync(fdr);
+  fse.closeSync(fdw);
+  fse.chmodSync(dest, fMode);
 };
 
 var batch = function (cb, location, action) {
   var files = exports.ls(location);
 
   files.forEach(function (file) {
-    var st = fs.lstatSync(path.join(location, file));
+    var st = fse.lstatSync(path.join(location, file));
     if (st.isDirectory()) {
       exports.batch[action](cb, path.join(location, file), action);
       return;
@@ -67,9 +66,9 @@ exports.mkdir = function (location, root) {
   root = (root || '') + dir + path.sep;
 
   try {
-    fs.mkdirSync(root);
+    fse.mkdirSync(root);
   } catch (err) {
-    if (!fs.statSync(root).isDirectory()) {
+    if (!fse.statSync(root).isDirectory()) {
       throw new Error(err);
     }
   }
@@ -96,14 +95,14 @@ exports.mkdir = function (location, root) {
  * @param {string} dest - The file or the destination directory.
  */
 exports.cp = function (src, dest) {
-  var stats = fs.lstatSync(src);
+  var stats = fse.lstatSync(src);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
     exports.mkdir(path.dirname(dest));
     cpFile(src, dest);
   } else if (stats.isDirectory()) {
     exports.mkdir(dest);
-    fs.readdirSync(src).forEach(function (item) {
+    fse.readdirSync(src).forEach(function (item) {
       exports.cp(path.join(src, item), path.join(dest, item));
     });
   }
@@ -129,17 +128,17 @@ exports.cp = function (src, dest) {
  * @param {string} dest - The file or the destination directory.
  */
 exports.mv = function (src, dest) {
-  var stats = fs.lstatSync(src);
+  var stats = fse.lstatSync(src);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
     exports.mkdir(path.dirname(dest));
-    fs.renameSync(src, dest);
+    fse.renameSync(src, dest);
   } else if (stats.isDirectory()) {
     exports.mkdir(dest);
-    fs.readdirSync(src).forEach(function (item) {
+    fse.readdirSync(src).forEach(function (item) {
       try {
         /* Try the faster move. */
-        fs.renameSync(path.join(src, item), path.join(dest, item));
+        fse.renameSync(path.join(src, item), path.join(dest, item));
       } catch (ex) {
         /* Or use a copy / rm if it fails. */
         exports.cp(path.join(src, item), path.join(dest, item));
@@ -160,24 +159,24 @@ exports.batch.mv = function (cb, location) {
 };
 
 exports.rmSymlinks = function (location) {
-  const stats = fs.lstatSync(location);
+  const stats = fse.lstatSync(location);
 
   if (stats.isSymbolicLink()) {
     exports.rm(location);
   } else if (stats.isDirectory()) {
-    fs.readdirSync(location).forEach((item) => {
+    fse.readdirSync(location).forEach((item) => {
       exports.rmSymlinks(path.join(location, item));
     });
   }
 };
 
 exports.rmFiles = function (location) {
-  const stats = fs.lstatSync(location);
+  const stats = fse.lstatSync(location);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
     exports.rm(location);
   } else if (stats.isDirectory()) {
-    fs.readdirSync(location).forEach((item) => {
+    fse.readdirSync(location).forEach((item) => {
       exports.rmFiles(path.join(location, item));
     });
   }
@@ -188,7 +187,7 @@ exports.rm = function (location) {
 };
 
 exports.lsdir = function (location, regex) {
-  var listIn = fs.readdirSync(location);
+  var listIn = fse.readdirSync(location);
   var listOut = [];
 
   listIn.forEach(function (item) {
@@ -197,7 +196,7 @@ exports.lsdir = function (location, regex) {
     }
 
     var dir = path.join(location, item);
-    var st = fs.statSync(dir);
+    var st = fse.statSync(dir);
     if (st.isDirectory()) {
       listOut.push(item);
     }
@@ -207,7 +206,7 @@ exports.lsdir = function (location, regex) {
 };
 
 exports.ls = function (location, regex) {
-  var listIn = fs.readdirSync(location);
+  var listIn = fse.readdirSync(location);
   var listOut = [];
 
   listIn.forEach(function (item) {
@@ -222,7 +221,7 @@ exports.ls = function (location, regex) {
 };
 
 exports.lsall = function (location, followSymlink = false) {
-  const listIn = fs.readdirSync(location);
+  const listIn = fse.readdirSync(location);
   let listOut = [];
 
   listIn.forEach(function (item) {
@@ -230,7 +229,7 @@ exports.lsall = function (location, followSymlink = false) {
     listOut.push(entry);
     let st = null;
     try {
-      st = followSymlink ? fs.statSync(entry) : fs.lstatSync(entry);
+      st = followSymlink ? fse.statSync(entry) : fse.lstatSync(entry);
     } catch (ex) {
       /* Ignore unsupported paths, only directories are useful here  */
     }
@@ -247,7 +246,7 @@ exports.canExecute = function (file) {
   var st;
 
   try {
-    st = fs.statSync(file);
+    st = fse.statSync(file);
   } catch (err) {
     return false;
   }
@@ -256,7 +255,7 @@ exports.canExecute = function (file) {
 };
 
 exports.newerFiles = function (location, regex, mtime) {
-  var listIn = fs.readdirSync(location);
+  var listIn = fse.readdirSync(location);
 
   return listIn.some(function (item) {
     if (regex && !regex.test(item)) {
@@ -264,7 +263,7 @@ exports.newerFiles = function (location, regex, mtime) {
     }
 
     var file = path.join(location, item);
-    var st = fs.lstatSync(file);
+    var st = fse.lstatSync(file);
 
     if (st.isDirectory()) {
       return exports.newerFiles(file, regex, mtime);
@@ -275,7 +274,7 @@ exports.newerFiles = function (location, regex, mtime) {
 };
 
 exports.shasum = function (location, regex, sha = null) {
-  const listIn = fs.readdirSync(location);
+  const listIn = fse.readdirSync(location);
 
   let main = false;
   if (!sha) {
@@ -289,7 +288,7 @@ exports.shasum = function (location, regex, sha = null) {
     }
 
     const file = path.join(location, item);
-    const st = fs.lstatSync(file);
+    const st = fse.lstatSync(file);
 
     if (st.isDirectory()) {
       exports.shasum(file, regex, sha);
@@ -298,9 +297,9 @@ exports.shasum = function (location, regex, sha = null) {
 
     let data;
     if (st.isSymbolicLink()) {
-      data = fs.readlinkSync(file);
+      data = fse.readlinkSync(file);
     } else {
-      data = fs.readFileSync(file);
+      data = fse.readFileSync(file);
     }
 
     sha.update(data);
@@ -317,12 +316,12 @@ exports.sed = function (file, regex, newValue) {
     return false;
   }
 
-  let data = fs.readFileSync(file).toString();
+  let data = fse.readFileSync(file).toString();
   if (!regex.test(data)) {
     return false;
   }
 
   data = data.replace(regex, newValue);
-  fs.writeFileSync(file, data);
+  fse.writeFileSync(file, data);
   return true;
 };
