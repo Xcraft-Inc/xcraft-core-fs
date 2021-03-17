@@ -15,7 +15,7 @@ var cpFile = function (src, dest) {
   if (st.isSymbolicLink()) {
     const link = fs.readlinkSync(src);
     try {
-      fs.unlinkSync(dest);
+      fse.removeSync(dest);
     } catch (ex) {
       if (ex.code !== 'ENOENT') {
         throw ex;
