@@ -47,15 +47,26 @@ var batch = function (cb, location, action) {
   var files = exports.ls(location);
 
   files.forEach(function (file) {
-    var st = fse.lstatSync(path.join(location, file));
+    const _file = path.join(location, file);
+    let st;
+    try {
+      st = fse.lstatSync(_file);
+    } catch (ex) {
+      if (ex.code !== 'EPERM' || fse.existsSync(_file)) {
+        throw ex;
+      }
+      /* Ignore, the file is no longer available */
+      return;
+    }
+
     if (st.isDirectory()) {
-      exports.batch[action](cb, path.join(location, file), action);
+      exports.batch[action](cb, _file, action);
       return;
     }
 
     const fileName = cb(location, file);
     if (fileName) {
-      exports[action](path.join(location, file), path.join(location, fileName));
+      exports[action](_file, path.join(location, fileName));
     }
   });
 };
