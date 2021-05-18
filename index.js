@@ -104,18 +104,24 @@ exports.mkdir = function (location, root) {
  *
  * @param {string} src - The file or directory to copy.
  * @param {string} dest - The file or the destination directory.
+ * @param {RegExp} regex - Filtering for source files / directories.
  */
-exports.cp = function (src, dest) {
+exports.cp = function (src, dest, regex) {
   var stats = fse.lstatSync(src);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
     exports.mkdir(path.dirname(dest));
-    cpFile(src, dest);
+    if (regex ? regex.test(src) : true) {
+      cpFile(src, dest);
+    }
   } else if (stats.isDirectory()) {
     exports.mkdir(dest);
-    fse.readdirSync(src).forEach(function (item) {
-      exports.cp(path.join(src, item), path.join(dest, item));
-    });
+    fse
+      .readdirSync(src)
+      .filter((item) => (regex ? regex.test(item) : true))
+      .forEach(function (item) {
+        exports.cp(path.join(src, item), path.join(dest, item), regex);
+      });
   }
 };
 
@@ -137,27 +143,45 @@ exports.cp = function (src, dest) {
  *
  * @param {string} src - The file or directory to move.
  * @param {string} dest - The file or the destination directory.
+ * @param {RegExp} regex - Filtering for source files / directories.
  */
-exports.mv = function (src, dest) {
+exports.mv = function (src, dest, regex = null) {
   var stats = fse.lstatSync(src);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
     exports.mkdir(path.dirname(dest));
-    fse.renameSync(src, dest);
+    if (regex ? regex.test(src) : true) {
+      fse.renameSync(src, dest);
+    }
   } else if (stats.isDirectory()) {
+    let skip = 0;
     exports.mkdir(dest);
-    fse.readdirSync(src).forEach(function (item) {
-      try {
-        /* Try the faster move. */
-        fse.renameSync(path.join(src, item), path.join(dest, item));
-      } catch (ex) {
-        /* Or use a copy / rm if it fails. */
-        exports.cp(path.join(src, item), path.join(dest, item));
-        exports.rm(path.join(src, item));
-      }
-    });
+    fse
+      .readdirSync(src)
+      .filter((item) => {
+        if (regex) {
+          const test = regex.test(item);
+          if (!test) {
+            ++skip;
+          }
+          return test;
+        }
+        return true;
+      })
+      .forEach(function (item) {
+        try {
+          /* Try the faster move. */
+          fse.renameSync(path.join(src, item), path.join(dest, item));
+        } catch (ex) {
+          /* Or use a copy / rm if it fails. */
+          exports.cp(path.join(src, item), path.join(dest, item));
+          exports.rm(path.join(src, item));
+        }
+      });
 
-    exports.rm(src);
+    if (!skip) {
+      exports.rm(src);
+    }
   }
 };
 
