@@ -240,6 +240,25 @@ exports.lsdir = function (location, regex) {
   return listOut;
 };
 
+exports.lsfile = function (location, regex) {
+  var listIn = fse.readdirSync(location);
+  var listOut = [];
+
+  listIn.forEach(function (item) {
+    if (regex && !regex.test(item)) {
+      return;
+    }
+
+    var file = path.join(location, item);
+    var st = fse.statSync(file);
+    if (!st.isDirectory()) {
+      listOut.push(item);
+    }
+  });
+
+  return listOut;
+};
+
 exports.ls = function (location, regex) {
   var listIn = fse.readdirSync(location);
   var listOut = [];
