@@ -379,3 +379,5 @@ exports.sed = function (file, regex, newValue) {
   fse.writeFileSync(file, data);
   return true;
 };
+
+exports.fse = fse;
