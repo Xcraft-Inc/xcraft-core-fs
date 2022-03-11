@@ -274,21 +274,29 @@ exports.ls = function (location, regex) {
   return listOut;
 };
 
-exports.lsall = function (location, followSymlink = false) {
+exports.lsall = function (location, followSymlink = false, filter = null) {
   const listIn = fse.readdirSync(location);
   let listOut = [];
 
   listIn.forEach(function (item) {
     const entry = path.join(location, item);
-    listOut.push(entry);
     let st = null;
     try {
       st = followSymlink ? fse.statSync(entry) : fse.lstatSync(entry);
     } catch (ex) {
       /* Ignore unsupported paths, only directories are useful here  */
     }
+
+    if (filter) {
+      if (filter(item, st)) {
+        listOut.push(entry);
+      }
+    } else {
+      listOut.push(entry);
+    }
+
     if (st && st.isDirectory()) {
-      listOut = listOut.concat(exports.lsall(entry, followSymlink));
+      listOut = listOut.concat(exports.lsall(entry, followSymlink, filter));
     }
   });
 
