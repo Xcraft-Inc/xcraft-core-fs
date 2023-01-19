@@ -72,7 +72,7 @@ var batch = function (cb, location, action) {
 };
 
 exports.mkdir = function (location, root) {
-  var dirs = location.split(path.sep);
+  var dirs = path.normalize(location).split(path.sep);
   var dir = dirs.shift();
   root = (root || '') + dir + path.sep;
 
