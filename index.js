@@ -71,20 +71,8 @@ var batch = function (cb, location, action) {
   });
 };
 
-exports.mkdir = function (location, root) {
-  var dirs = path.normalize(location).split(path.sep);
-  var dir = dirs.shift();
-  root = (root || '') + dir + path.sep;
-
-  try {
-    fse.mkdirSync(root);
-  } catch (err) {
-    if (!fse.statSync(root).isDirectory()) {
-      throw new Error(err);
-    }
-  }
-
-  return !dirs.length || exports.mkdir(dirs.join(path.sep), root);
+exports.mkdir = function (location) {
+  fse.ensureDirSync(path.normalize(location));
 };
 
 /**
