@@ -1,0 +1,9 @@
+[
+  {
+    "Module": "xcraft-core-fs",
+    "Version": "v2.5.0",
+    "Hash": "5d8ae9f",
+    "Dev": "master",
+    "Prod": "2.5"
+  }
+]
