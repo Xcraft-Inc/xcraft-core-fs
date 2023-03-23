@@ -136,10 +136,21 @@ exports.cp = function (src, dest, regex) {
 exports.mv = function (src, dest, regex = null) {
   var stats = fse.lstatSync(src);
 
+  const mvSafe = (src, dst) => {
+    try {
+      /* Try the faster move. */
+      fse.renameSync(src, dst);
+    } catch (ex) {
+      /* Or use a copy / rm if it fails. */
+      exports.cp(src, dst);
+      exports.rm(src);
+    }
+  };
+
   if (stats.isFile() || stats.isSymbolicLink()) {
     exports.mkdir(path.dirname(dest));
     if (regex ? regex.test(src) : true) {
-      fse.renameSync(src, dest);
+      mvSafe(src, dest);
     }
   } else if (stats.isDirectory()) {
     let skip = 0;
@@ -156,16 +167,7 @@ exports.mv = function (src, dest, regex = null) {
         }
         return true;
       })
-      .forEach(function (item) {
-        try {
-          /* Try the faster move. */
-          fse.renameSync(path.join(src, item), path.join(dest, item));
-        } catch (ex) {
-          /* Or use a copy / rm if it fails. */
-          exports.cp(path.join(src, item), path.join(dest, item));
-          exports.rm(path.join(src, item));
-        }
-      });
+      .forEach((item) => mvSafe(path.join(src, item), path.join(dest, item)));
 
     if (!skip) {
       exports.rm(src);
