@@ -335,8 +335,14 @@ exports.shasum = function (location, regex, sha = null) {
   }
 
   listIn.forEach((item) => {
-    if (regex && !regex.test(item)) {
-      return;
+    if (regex) {
+      if (typeof regex === 'function') {
+        if (!regex(item)) {
+          return;
+        }
+      } else if (!regex.test(item)) {
+        return;
+      }
     }
 
     const file = path.join(location, item);
