@@ -325,7 +325,7 @@ exports.newerFiles = function (location, regex, mtime) {
   });
 };
 
-exports.shasum = function (location, regex, sha = null) {
+exports.shasum = function (location, regex, sed, sha = null) {
   const listIn = fse.readdirSync(location);
 
   let main = false;
@@ -349,7 +349,7 @@ exports.shasum = function (location, regex, sha = null) {
     const st = fse.lstatSync(file);
 
     if (st.isDirectory()) {
-      exports.shasum(file, regex, sha);
+      exports.shasum(file, regex, sed, sha);
       return;
     }
 
@@ -358,6 +358,9 @@ exports.shasum = function (location, regex, sha = null) {
       data = fse.readlinkSync(file);
     } else {
       data = fse.readFileSync(file);
+    }
+    if (sed) {
+      data = sed(file, data);
     }
 
     sha.update(data);
