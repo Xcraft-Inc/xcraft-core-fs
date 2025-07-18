@@ -18,7 +18,12 @@
     "type": "git",
     "url": "git+https://github.com/Xcraft-Inc/xcraft-core-fs.git"
   },
-  "author": "Mathieu Schroeter",
+  "author": "Epsitec SA",
+  "contributors": [
+    "Mathieu Schroeter <schroeter@epsitec.ch>",
+    "Samuel Loup <loup@epsitec.ch>",
+    "Gillian Fries <fries@epsitec.ch>"
+  ],
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^11.3.0",
