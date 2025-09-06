@@ -195,14 +195,16 @@ exports.rmSymlinks = function (location) {
   }
 };
 
-exports.rmFiles = function (location) {
+exports.rmFiles = function (location, regex) {
   const stats = fse.lstatSync(location);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
-    exports.rm(location);
+    if (!regex || (regex && regex.test(item))) {
+      exports.rm(location);
+    }
   } else if (stats.isDirectory()) {
     fse.readdirSync(location).forEach((item) => {
-      exports.rmFiles(path.join(location, item));
+      exports.rmFiles(path.join(location, item), regex);
     });
   }
 };
