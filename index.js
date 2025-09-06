@@ -199,7 +199,7 @@ exports.rmFiles = function (location, regex) {
   const stats = fse.lstatSync(location);
 
   if (stats.isFile() || stats.isSymbolicLink()) {
-    if (!regex || (regex && regex.test(item))) {
+    if (!regex || (regex && regex.test(location))) {
       exports.rm(location);
     }
   } else if (stats.isDirectory()) {
