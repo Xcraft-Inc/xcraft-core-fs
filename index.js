@@ -327,46 +327,53 @@ exports.newerFiles = function (location, regex, mtime) {
   });
 };
 
-exports.shasum = function (location, regex, sed, sha = null) {
-  const listIn = fse.readdirSync(location);
-
-  let main = false;
-  if (!sha) {
-    sha = crypto.createHash('sha256');
-    main = true;
+exports.shasum = function (locations, regex, sed, sha = null) {
+  if (!Array.isArray(locations)) {
+    locations = [locations];
   }
 
-  listIn.forEach((item) => {
-    if (regex) {
-      if (typeof regex === 'function') {
-        if (!regex(item)) {
+  let main = false;
+
+  for (const location of locations) {
+    const listIn = fse.readdirSync(location);
+
+    if (!sha) {
+      sha = crypto.createHash('sha256');
+      main = true;
+    }
+
+    listIn.forEach((item) => {
+      if (regex) {
+        if (typeof regex === 'function') {
+          if (!regex(item)) {
+            return;
+          }
+        } else if (!regex.test(item)) {
           return;
         }
-      } else if (!regex.test(item)) {
+      }
+
+      const file = path.join(location, item);
+      const st = fse.lstatSync(file);
+
+      if (st.isDirectory()) {
+        exports.shasum(file, regex, sed, sha);
         return;
       }
-    }
 
-    const file = path.join(location, item);
-    const st = fse.lstatSync(file);
+      let data;
+      if (st.isSymbolicLink()) {
+        data = fse.readlinkSync(file);
+      } else {
+        data = fse.readFileSync(file);
+      }
+      if (sed) {
+        data = sed(file, data);
+      }
 
-    if (st.isDirectory()) {
-      exports.shasum(file, regex, sed, sha);
-      return;
-    }
-
-    let data;
-    if (st.isSymbolicLink()) {
-      data = fse.readlinkSync(file);
-    } else {
-      data = fse.readFileSync(file);
-    }
-    if (sed) {
-      data = sed(file, data);
-    }
-
-    sha.update(data);
-  });
+      sha.update(data);
+    });
+  }
 
   if (main) {
     return sha.digest('hex');
